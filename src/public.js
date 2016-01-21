@@ -525,35 +525,31 @@ Grid.prototype.remove = function(rowIds)
     {
         var that = this;
 
-        if (this.options.ajax)
-        {
-            // todo: implement ajax DELETE
-        }
-        else
-        {
-            rowIds = rowIds || this.selectedRows;
-            var id,
-                removedRows = [];
+        rowIds = rowIds || this.selectedRows;
+        var id,
+            removedRows = [];
 
-            for (var i = 0; i < rowIds.length; i++)
+        for (var i = 0; i < rowIds.length; i++)
+        {
+            id = rowIds[i];
+			if(this.selectedRows.indexOf(id) != -1){
+				this.selectedRows.splice(this.selectedRows.indexOf(id), 1); // unselect
+			}
+
+            for (var j = 0; j < this.rows.length; j++)
             {
-                id = rowIds[i];
-
-                for (var j = 0; j < this.rows.length; j++)
+                if (this.rows[j][this.identifier] === id)
                 {
-                    if (this.rows[j][this.identifier] === id)
-                    {
-                        removedRows.push(this.rows[j]);
-                        this.rows.splice(j, 1);
-                        break;
-                    }
+                    removedRows.push(this.rows[j]);
+                    this.rows.splice(j, 1);
+                    break;
                 }
-            }
-
-            this.current = 1; // reset
-            loadData.call(this);
-            this.element.trigger("removed" + namespace, [removedRows]);
+            }	
         }
+
+        this.current = 1; // reset
+        loadData.call(this);
+        this.element.trigger("removed" + namespace, [removedRows]);
     }
 
     return this;
